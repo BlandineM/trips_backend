@@ -2,7 +2,7 @@ const express = require("express");
 const { connection } = require("../config/db");
 const router = express.Router();
 const passport = require("passport");
-require("../passport-strategies");
+require("../passport-startegies");
 
 router.use((req, res, next) => {
   passport.authenticate("jwt", { session: false }, (error, user) => {
