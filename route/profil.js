@@ -16,7 +16,7 @@ router.get("/:idUser", (req, res) => {
   const { idUser } = req.params;
   // Connection to the database and selection of information
   connection.query(
-    `SELECT users.id, users.name, users.avatar, pays.name, periodes.month, assoc_pays_periodes_users.year
+    `SELECT users.id AS user_id, users.name, users.avatar, pays.name, periodes.id AS periode_id, assoc_pays_periodes_users.year
       FROM assoc_pays_periodes_users
     INNER JOIN pays on pays.id = assoc_pays_periodes_users.id_pays
     INNER JOIN users on users.id = assoc_pays_periodes_users.id_users
