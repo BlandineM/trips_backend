@@ -9,8 +9,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./backend
 
     strategy:
       matrix:
@@ -23,11 +21,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: pwd
-      working-directory: ${{env.working-directory}}
     - run: npm ci
-      working-directory: ${{env.working-directory}}
     - run: npm test
-      working-directory: ${{env.working-directory}}
       env:
         HOST: localhost
         DBUSER: root
