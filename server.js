@@ -16,6 +16,7 @@ app.use(passport.initialize());
 
 app.use("/", require("./route/type"));
 app.use("/auth", require("./route/auth"));
+app.use("/profil", require("./route/profil"));
 
 
 initScript.initDb()
