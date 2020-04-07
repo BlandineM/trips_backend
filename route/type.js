@@ -90,4 +90,23 @@ router.post("/:type/:id/newtrip", (req, res) => {
     }
   );
 });
+
+router.get("/countries", (res) => {
+  // Connection to the database and selection of information
+  connection.query(
+    `SELECT pays.id AS id_pays, pays.name,  pays.nameFr, pays.flag
+      FROM pays;`,
+    (err, results) => {
+      console.log("hop");
+
+      if (err) {
+        // If an error has occurred, then the user is informed of the error
+        res.status(500).send("Error in destination");
+      }
+      console.log("hey");
+
+      res.json(results);
+    }
+  );
+});
 module.exports = router;
