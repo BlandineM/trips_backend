@@ -98,5 +98,19 @@ router.post('/:idUser/avatar', upload.single('avatar'), (req, res) => {
   );
 });
 
+router.post('/:idUser/country', (req, res) => {
+  const { idUser } = req.params;
+  const country = req.body;
+  connection.query(
+    'INSERT INTO assoc_pays_periodes_users SET id_pays = ?, id_periodes = ?,  year = ?,  id_users = ?;', [country, idUser],
+    (err, results) => {
+      if (err) {
+        res.status(500).send('erreur lors de l\'ajout du voyage');
+      }
+      res.status(200).send('ok');
+    });
+  );
+});
+
 
 module.exports = router;
