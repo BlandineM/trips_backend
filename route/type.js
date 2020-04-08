@@ -19,7 +19,7 @@ function sqlAdvised(advised) {
 }
 
 // Route of all destinations
-router.get("/:type", (req, res) => {
+router.get("/type/:type/countries", (req, res) => {
   const type = req.params.type;
   const sqlName = sqlNameByType(type);
   // Connection to the database and selection of information
@@ -34,14 +34,12 @@ router.get("/:type", (req, res) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
         res.status(500).send("Error in destination");
-      }
-
-      res.json(results);
+      } res.json(results);
     }
   );
 });
 // Route of all destinations for the chosen month
-router.get("/:type/:id/:advised", (req, res) => {
+router.get("/type/:type/:id/:advised", (req, res) => {
   const type = req.params.type;
   const id = req.params.id;
   const advised = req.params.advised;
@@ -58,12 +56,8 @@ router.get("/:type/:id/:advised", (req, res) => {
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
-        res
-          .status(500)
-          .send("Error in destination beaches for the chosen month");
-      }
-
-      res.json(results);
+        res.status(500).send("Error in destination beaches for the chosen month");
+      } res.json(results);
     }
   );
 });
@@ -78,34 +72,28 @@ router.post("/:type/:id/newtrip", (req, res) => {
 
   connection.query(
     `INSERT INTO destinations (pays, mois_conseille_${sqlName})
-    values ("${newtrip.pays}", "${id}"); 
+    values (?, ?); 
     ;`,
-    [id, newtrip],
+    [newtrip, id],
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
         res.status(500).send("Invalid trip registration");
-      }
-      res.status(200).json(results);
+      } res.status(200).json(results);
     }
   );
 });
 
-router.get("/countries", (res) => {
+router.get("/countries", (req, res) => {
   // Connection to the database and selection of information
   connection.query(
     `SELECT pays.id AS id_pays, pays.name,  pays.nameFr, pays.flag
       FROM pays;`,
     (err, results) => {
-      console.log("hop");
-
       if (err) {
         // If an error has occurred, then the user is informed of the error
         res.status(500).send("Error in destination");
-      }
-      console.log("hey");
-
-      res.json(results);
+      } res.status(200).json(results);
     }
   );
 });
