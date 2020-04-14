@@ -39,7 +39,7 @@ router.get("/type/:type/countries", (req, res) => {
   );
 });
 // Route of all destinations for the chosen month
-router.get("/type/:type/:id/:advised", (req, res) => {
+router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
   const type = req.params.type;
   const id = req.params.id;
   const advised = req.params.advised;
