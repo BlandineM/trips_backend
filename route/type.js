@@ -20,7 +20,7 @@ function sqlAdvised(advised) {
 
 // Route of all destinations
 router.get("/type/:type/countries", (req, res) => {
-  const type = req.params.type;
+  const { type } = req.params;
   const sqlName = sqlNameByType(type);
   // Connection to the database and selection of information
   connection.query(
@@ -40,9 +40,9 @@ router.get("/type/:type/countries", (req, res) => {
 });
 // Route of all destinations for the chosen month
 router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
-  const type = req.params.type;
-  const id = req.params.id;
-  const advised = req.params.advised;
+  const { type } = req.params;
+  const { id } = req.params;
+  const { advised } = req.params;
   const sqlName = sqlNameByType(type);
   const sqlType = sqlAdvised(advised)
   // Connection to the database and selection of information
@@ -63,7 +63,7 @@ router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
 });
 
 //route to create a new car and link it at the user
-router.post("/:type/:id/newtrip", (req, res) => {
+router.post("/type/:type/:id/newtrip", (req, res) => {
   const type = req.params.type;
   const id = req.params.id;
   const newtrip = req.body;
