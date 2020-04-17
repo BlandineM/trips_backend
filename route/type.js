@@ -19,8 +19,8 @@ function sqlAdvised(advised) {
 }
 
 // Route of all destinations
-router.get("/:type", (req, res) => {
-  const type = req.params.type;
+router.get("/type/:type/countries", (req, res) => {
+  const { type } = req.params;
   const sqlName = sqlNameByType(type);
   // Connection to the database and selection of information
   connection.query(
@@ -34,17 +34,15 @@ router.get("/:type", (req, res) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
         res.status(500).send("Error in destination");
-      }
-
-      res.json(results);
+      } res.json(results);
     }
   );
 });
 // Route of all destinations for the chosen month
-router.get("/:type/:id/:advised", (req, res) => {
-  const type = req.params.type;
-  const id = req.params.id;
-  const advised = req.params.advised;
+router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
+  const { type } = req.params;
+  const { id } = req.params;
+  const { advised } = req.params;
   const sqlName = sqlNameByType(type);
   const sqlType = sqlAdvised(advised)
   // Connection to the database and selection of information
@@ -58,35 +56,44 @@ router.get("/:type/:id/:advised", (req, res) => {
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
-        res
-          .status(500)
-          .send("Error in destination beaches for the chosen month");
-      }
-
-      res.json(results);
+        res.status(500).send("Error in destination beaches for the chosen month");
+      } res.json(results);
     }
   );
 });
 
-//route to create a new car and link it at the user
-router.post("/:type/:id/newtrip", (req, res) => {
-  const type = req.params.type;
-  const id = req.params.id;
-  const newtrip = req.body;
-  const sqlName = sqlNameByType(type);
-  console.log(newtrip);
+// //route to create a new countriy and link it at the user
+// router.post("/type/:type/:id/newtrip", (req, res) => {
+//   const type = req.params.type;
+//   const id = req.params.id;
+//   const newtrip = req.body;
+//   const sqlName = sqlNameByType(type);
+//   console.log(newtrip);
 
+//   connection.query(
+//     `INSERT INTO destinations (pays, mois_conseille_${sqlName})
+//     values (?, ?); 
+//     ;`,
+//     [newtrip, id],
+//     (err, results) => {
+//       if (err) {
+//         // If an error has occurred, then the user is informed of the error
+//         res.status(500).send("Invalid trip registration");
+//       } res.status(200).json(results);
+//     }
+//   );
+// });
+
+router.get("/countries", (req, res) => {
+  // Connection to the database and selection of information
   connection.query(
-    `INSERT INTO destinations (pays, mois_conseille_${sqlName})
-    values ("${newtrip.pays}", "${id}"); 
-    ;`,
-    [id, newtrip],
+    `SELECT pays.id AS id_pays, pays.name,  pays.nameFr, pays.flag
+      FROM pays;`,
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
-        res.status(500).send("Invalid trip registration");
-      }
-      res.status(200).json(results);
+        res.status(500).send("Error in destination");
+      } res.status(200).json(results);
     }
   );
 });
