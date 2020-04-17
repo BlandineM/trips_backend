@@ -118,4 +118,25 @@ router.get("/countries/tripper", (req, res) => {
   );
 });
 
+// Route who saw in month
+router.get("/countries/tripper/periode/:id", (req, res) => {
+  const { id } = req.params;
+  // Connection to the database and selection of information
+  connection.query(
+    `SELECT pays.id AS id_pays, pays.name, count(*) as numOfVisited, pays.nameFr, pays.flag, pays.pictures
+      FROM assoc_pays_periodes_users
+        INNER JOIN pays on pays.id=assoc_pays_periodes_users.id_pays 
+        INNER JOIN periodes on periodes.id=assoc_pays_periodes_users.id_periodes
+      WHERE id_periodes=?
+      GROUP BY pays.id;`, [id],
+    (err, results) => {
+      if (err) {
+        // If an error has occurred, then the user is informed of the error
+        res.status(500).send("Error in route for see the tripper");
+      }
+      res.json(results);
+    }
+  );
+});
+
 module.exports = router;
