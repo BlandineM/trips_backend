@@ -114,6 +114,26 @@ router.post('/:idUser/country', (req, res) => {
 }
 );
 
+// Route next trip
+router.get("/users/:id/nextTrip", (req, res) => {
+  const { id } = req.params;
+  // Connection to the database and selection of information
+  connection.query(
+    `SELECT pays.name AS pays_name, pays.code
+      FROM assoc_pays_users_to_check
+    INNER JOIN pays on pays.id = assoc_pays_users_to_check.id_pays
+    INNER JOIN users on users.id = assoc_pays_users_to_check.id_users
+    WHERE users.id=2;`, [id],
+    (err, results) => {
+      if (err) {
+        // If an error has occurred, then the user is informed of the error
+        res.status(500).send("Error in route for the next countries");
+      }
+      res.json(results);
+    }
+  );
+});
+
 
 
 module.exports = router;

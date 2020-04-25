@@ -84,17 +84,4 @@ router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
 //   );
 // });
 
-router.get("/countries", (req, res) => {
-  // Connection to the database and selection of information
-  connection.query(
-    `SELECT pays.id AS id_pays, pays.name,  pays.nameFr, pays.flag
-      FROM pays;`,
-    (err, results) => {
-      if (err) {
-        // If an error has occurred, then the user is informed of the error
-        res.status(500).send("Error in destination");
-      } res.status(200).json(results);
-    }
-  );
-});
 module.exports = router;
