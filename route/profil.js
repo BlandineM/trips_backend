@@ -65,7 +65,8 @@ router.post('/:idUser/avatar', (req, res) => {
       if (err) {
         console.error(err);
         return res.status(500).send(err);
-      } cloudinary.uploader.upload(
+      }
+      cloudinary.uploader.upload(
         `${__dirname}/../tmp/${file.name}`,
         {
           folder: 'avatar/',
@@ -82,13 +83,12 @@ router.post('/:idUser/avatar', (req, res) => {
             'UPDATE users SET avatar = ? WHERE id = ?;', [avatarUrl, idUser],
             (errUpdate) => {
               if (errUpdate) {
-                res.status(500).send('erreur lors de l\'ajout de la photo de profil');
+                return res.status(500).send('erreur lors de l\'ajout de la photo de profil');
               }
-              res.status(200).send('ok');
+              return res.json({ fileName: file.name, filePath: `/tmp/${file.name}` });
             });
         }
-      ),
-        res.json({ fileName: file.name, filePath: `/tmp/${file.name}` });
+      )
     });
 });
 
