@@ -3,7 +3,6 @@ const { connection } = require("../config/db");
 const { cloudinary } = require("../config/conf")
 const router = express.Router();
 const passport = require("passport");
-const multer = require('multer');
 require("../passport-startegies");
 
 router.use((req, res, next) => {
@@ -53,49 +52,44 @@ router.get("/:idUser", (req, res) => {
 });
 
 
-const storage = multer.diskStorage({
-  destination: './tmp/',
-  filename(req, file, cb) {
-    cb(
-      null,
-      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
-    );
-  }
-});
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 10000000 },
-  fileFilter(req, file, cb) {
-    checkFileType(file, cb);
+router.post('/:idUser/avatar', (req, res) => {
+  if (req.files === null) {
+    return res.status(400).json({ msg: 'No file uploaded' });
   }
-});
-
-router.post('/:idUser/avatar', upload.single('avatar'), (req, res) => {
   const { idUser } = req.params;
-  const file = req.file.path;
-  cloudinary.uploader.upload(
-    file,
-    {
-      folder: 'avatar/',
-      public_id: `avatar-${idUser}`,
-      tags: 'avatar'
-    },
-    (err, image) => {
+  const file = req.files.file;
+
+  file.mv(`${__dirname}/../tmp/${file.name}`
+    , err => {
       if (err) {
-        console.log(err);
-      }
-      const avatarUrl = image.url;
-      connection.query(
-        'UPDATE users SET avatar = ? WHERE idUser = ?;', [avatarUrl, id],
-        (errUpdate, resUpdate) => {
-          if (errUpdate) {
-            res.status(500).send('erreur lors de l\'ajout de la photo de profil');
+        console.error(err);
+        return res.status(500).send(err);
+      } cloudinary.uploader.upload(
+        `${__dirname}/../tmp/${file.name}`,
+        {
+          folder: 'avatar/',
+          public_id: `avatar-${idUser}`,
+          tags: 'avatar'
+        },
+        (err, image) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).send(err);
           }
-          res.status(200).send('ok');
-        });
-    }
-  );
+          const avatarUrl = image.url;
+          connection.query(
+            'UPDATE users SET avatar = ? WHERE id = ?;', [avatarUrl, idUser],
+            (errUpdate) => {
+              if (errUpdate) {
+                res.status(500).send('erreur lors de l\'ajout de la photo de profil');
+              }
+              res.status(200).send('ok');
+            });
+        }
+      ),
+        res.json({ fileName: file.name, filePath: `/tmp/${file.name}` });
+    });
 });
 
 router.post('/:idUser/country', (req, res) => {
@@ -123,7 +117,7 @@ router.get("/users/:id/nextTrip", (req, res) => {
       FROM assoc_pays_users_to_check
     INNER JOIN pays on pays.id = assoc_pays_users_to_check.id_pays
     INNER JOIN users on users.id = assoc_pays_users_to_check.id_users
-    WHERE users.id=2;`, [id],
+    WHERE users.id=?;`, [id],
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
