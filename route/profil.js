@@ -117,7 +117,7 @@ router.get("/users/:id/nextTrip", (req, res) => {
       FROM assoc_pays_users_to_check
     INNER JOIN pays on pays.id = assoc_pays_users_to_check.id_pays
     INNER JOIN users on users.id = assoc_pays_users_to_check.id_users
-    WHERE users.id=2;`, [id],
+    WHERE users.id=?;`, [id],
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
