@@ -17,11 +17,11 @@ router.get("/:idUser", (req, res) => {
   const { idUser } = req.params;
   // Connection to the database and selection of information
   connection.query(
-    `SELECT users.id AS user_id, users.name AS user_name, users.avatar, pays.name AS pays_name, pays.code, periodes.month AS periode_month, assoc_pays_periodes_users.year
+    `SELECT users.id AS user_id, users.name AS user_name, pays.flag, users.avatar, pays.name AS pays_name, pays.code, periodes.month AS periode_month, assoc_pays_periodes_users.year, assoc_pays_periodes_users.check
       FROM assoc_pays_periodes_users
     INNER JOIN pays on pays.id = assoc_pays_periodes_users.id_pays
     INNER JOIN users on users.id = assoc_pays_periodes_users.id_users
-    INNER JOIN periodes on periodes.id = assoc_pays_periodes_users.id_periodes
+    LEFT JOIN periodes on periodes.id = assoc_pays_periodes_users.id_periodes
     WHERE users.id=?
     ORDER BY assoc_pays_periodes_users.year DESC`, [idUser],
     (err, results) => {
@@ -40,12 +40,12 @@ router.get("/:idUser", (req, res) => {
         trip.countries.push({
           code: code.code,
           pays_name: code.pays_name,
+          pays_flag: code.flag,
           periode_month: code.periode_month,
-          year: code.year
+          year: code.year,
+          check: code.check
         })
       })
-
-      console.log(trip);
       res.status(200).send(trip);
     }
   );
@@ -107,27 +107,6 @@ router.post('/:idUser/country', (req, res) => {
     });
 }
 );
-
-// Route next trip
-router.get("/users/:id/nextTrip", (req, res) => {
-  const { id } = req.params;
-  // Connection to the database and selection of information
-  connection.query(
-    `SELECT pays.name AS pays_name, pays.code
-      FROM assoc_pays_users_to_check
-    INNER JOIN pays on pays.id = assoc_pays_users_to_check.id_pays
-    INNER JOIN users on users.id = assoc_pays_users_to_check.id_users
-    WHERE users.id=?;`, [id],
-    (err, results) => {
-      if (err) {
-        // If an error has occurred, then the user is informed of the error
-        res.status(500).send("Error in route for the next countries");
-      }
-      res.json(results);
-    }
-  );
-});
-
 
 
 module.exports = router;
