@@ -19,17 +19,17 @@ function sqlAdvised(advised) {
 }
 
 // Route of all destinations
-router.get("/type/:type/countries", (req, res) => {
+router.get("/:type/countries", (req, res) => {
   const { type } = req.params;
   const sqlName = sqlNameByType(type);
   // Connection to the database and selection of information
   connection.query(
-    `SELECT pays.id AS id_pays, pays.name, pays.capital, pays.region, pays.nameFr, pays.flag, pays.pictures
-      FROM assoc_pays_periodes_types
-        INNER JOIN pays on pays.id=assoc_pays_periodes_types.id_pays 
-        INNER JOIN periodes on periodes.id=assoc_pays_periodes_types.id_periodes
-      WHERE id_type=?
-      GROUP BY pays.id;`, [sqlName],
+    `SELECT countries.id AS id_country, countries.name, countries.capitalCity, countries.region, countries.nameFr, countries.flag, countries.pictures
+      FROM assoc_countries_periods_types
+        INNER JOIN countries on countries.id=assoc_countries_periods_types.id_countries 
+        INNER JOIN periods on periods.id=assoc_countries_periods_types.id_periods
+      WHERE id_types=?
+      GROUP BY countries.id;`, [sqlName],
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
@@ -39,7 +39,7 @@ router.get("/type/:type/countries", (req, res) => {
   );
 });
 // Route of all destinations for the chosen month
-router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
+router.get("/:type/period/:id/advised/:advised", (req, res) => {
   const { type } = req.params;
   const { id } = req.params;
   const { advised } = req.params;
@@ -47,11 +47,11 @@ router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
   const sqlType = sqlAdvised(advised)
   // Connection to the database and selection of information
   connection.query(
-    `SELECT  pays.id AS id_pays, pays.name, periodes.id AS id_month, periodes.month,pays.capital, pays.region, pays.nameFr, pays.flag, pays.pictures
-      FROM assoc_pays_periodes_types
-        INNER JOIN pays ON pays.id=assoc_pays_periodes_types.id_pays 
-        INNER JOIN periodes on periodes.id=assoc_pays_periodes_types.id_periodes
-      WHERE id_type=? AND id_periodes=? AND is_ok=?;`, [sqlName, id, sqlType]
+    `SELECT  countries.id AS id_countries, countries.name, periods.id AS id_month, periods.month,countries.capitalCity, countries.region, countries.nameFr, countries.flag, countries.pictures
+      FROM assoc_countries_periods_types
+        INNER JOIN countries ON countries.id=assoc_countries_periods_types.id_countries 
+        INNER JOIN periods on periods.id=assoc_countries_periods_types.id_periods
+      WHERE id_types=? AND id_periods=? AND is_ok=?;`, [sqlName, id, sqlType]
     ,
     (err, results) => {
       if (err) {
@@ -63,7 +63,7 @@ router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
 });
 
 // //route to create a new countriy and link it at the user
-// router.post("/type/:type/:id/newtrip", (req, res) => {
+// router.post("/:type/:id/newtrip", (req, res) => {
 //   const type = req.params.type;
 //   const id = req.params.id;
 //   const newtrip = req.body;
@@ -71,7 +71,7 @@ router.get("/type/:type/periode/:id/advised/:advised", (req, res) => {
 //   console.log(newtrip);
 
 //   connection.query(
-//     `INSERT INTO destinations (pays, mois_conseille_${sqlName})
+//     `INSERT INTO destinations (countries, mois_conseille_${sqlName})
 //     values (?, ?); 
 //     ;`,
 //     [newtrip, id],

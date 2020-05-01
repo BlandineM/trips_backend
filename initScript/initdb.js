@@ -7,7 +7,7 @@ function initDb() {
   return axios.get('https://restcountries.eu/rest/v2/all')
     .then((countries) => {
       connection.query(
-        `SELECT code from pays;`,
+        `SELECT coded from countries;`,
 
         (err, results) => {
           if (err) {
@@ -23,7 +23,7 @@ function initDb() {
             const flag = country.flag
             if (!results.includes(code)) {
               connection.query(
-                `INSERT INTO pays(name, capital, region, code, nameFr, flag)
+                `INSERT INTO countries(name, capitalCity, region, coded, nameFr, flag)
               Values(?);`, [[name, capital, region, code, nameFr, flag]]
               )
             }
