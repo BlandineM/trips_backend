@@ -12,8 +12,8 @@ router.post("/signup", (req, res) => {
   const userDTO = req.body;
   const userService = new UserService(UserModel);
   return userService.signup(userDTO)
-      .then(result => res.status(201).json(result))
-      .catch((err => res.status(err.httpStatusCode).send(err.message)));
+    .then(result => res.status(201).json(result))
+    .catch((err => res.status(err.httpStatusCode).send(err.message)));
 });
 
 router.post("/login", (req, res) => {

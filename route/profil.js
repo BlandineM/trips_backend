@@ -5,48 +5,46 @@ const router = express.Router();
 const passport = require("passport");
 require("../passport-startegies");
 
-router.use((req, res, next) => {
-  passport.authenticate("jwt", { session: false }, (error, user) => {
-    if (error) return res.status(500).send(error, info);
-    if (!user) return res.status(401).send("Unauthorized");
-    next();
-  })(req, res);
-});
+// router.use((req, res, next) => {
+//   passport.authenticate("jwt", { session: false }, (error, user) => {
+//     if (error) return res.status(500).send(error, info);
+//     if (!user) return res.status(401).send("Unauthorized");
+//     next();
+//   })(req, res);
+// });
 
-router.get("/:idUser", (req, res) => {
+router.get('/:idUser', (req, res) => {
+  const { idUser } = req.params;
+  connection.query(
+    `SELECT users.id AS user_id, users.name AS user_name, users.avatar, 
+    FROM users
+    WHERE id=?;`, [idUser],
+    (err, results) => {
+      if (err) {
+        res.status(500).send(`erreur lors de la récuppération de l'user ${err}`);
+      }
+      res.json(results);
+    });
+}
+);
+
+router.get("/:idUser/countries", (req, res) => {
   const { idUser } = req.params;
   // Connection to the database and selection of information
   connection.query(
-    `SELECT users.id AS user_id, users.name AS user_name, pays.flag, users.avatar, pays.name AS pays_name, pays.code, periodes.month AS periode_month, assoc_pays_periodes_users.year, assoc_pays_periodes_users.check
-      FROM assoc_pays_periodes_users
-    INNER JOIN pays on pays.id = assoc_pays_periodes_users.id_pays
-    INNER JOIN users on users.id = assoc_pays_periodes_users.id_users
-    LEFT JOIN periodes on periodes.id = assoc_pays_periodes_users.id_periodes
+    `SELECT countries.flag, countries.name AS country_name, countries.coded, periods.month AS month, assoc_countries_periods_users.year, assoc_countries_periods_users.check
+      FROM assoc_countries_periods_users
+    INNER JOIN countries on countries.id = assoc_countries_periods_users.id_countries
+    INNER JOIN users on users.id = assoc_countries_periods_users.id_users
+    LEFT JOIN periods on periods.id = assoc_countries_periods_users.id_periods
     WHERE users.id=?
-    ORDER BY assoc_pays_periodes_users.year DESC`, [idUser],
+    ORDER BY assoc_countries_periods_users.year DESC`, [idUser],
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
         res.status(500).send("Error in destination");
       }
-      const trip = {
-        user_id: results[0].user_id,
-        name: results[0].user_name,
-        avatar: results[0].avatar,
-        countries: []
-      };
-
-      results.map((code) => {
-        trip.countries.push({
-          code: code.code,
-          pays_name: code.pays_name,
-          pays_flag: code.flag,
-          periode_month: code.periode_month,
-          year: code.year,
-          check: code.check
-        })
-      })
-      res.status(200).send(trip);
+      res.status(200).send(results);
     }
   );
 });
@@ -93,20 +91,18 @@ router.post('/:idUser/avatar', (req, res) => {
 });
 
 router.post('/:idUser/country', (req, res) => {
-  const idUser = req.body;
-  const pays = req.body;
-  const periode = req.body;
-  const year = req.body;
+  const { idUser } = req.params;
+  const { country, period, year, check } = req.body;
   connection.query(
-    'INSERT INTO assoc_pays_periodes_users  SET id_pays=?, id_periodes=?, year=?, id_users=?;', [pays, periode, year, idUser],
+    'INSERT INTO assoc_countries_periods_users SET id_countries=?, id_periods=?, year=?, check=?, id_users=?;', [country, period, year, check, idUser],
     (err, results) => {
       if (err) {
-        res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
+        return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
       }
-      res.status(200).send('ok');
+      return res.status(200).send('ok');
     });
 }
 );
 
 
-module.exports = router;
+module.exports = router
