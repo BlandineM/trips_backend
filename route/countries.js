@@ -22,9 +22,9 @@ router.get("/tripper", (req, res) => {
   // Connection to the database and selection of information
   connection.query(
     `SELECT countries.id AS id_countries, countries.name, count(*) as numOfVisited, countries.nameFr, countries.flag, countries.pictures
-      FROM assoc_countries_periods_users
-        INNER JOIN countries on countries.id=assoc_countries_periods_users.id_countries 
-        INNER JOIN periods on periods.id=assoc_countries_periods_users.id_periods
+      FROM trips
+        INNER JOIN countries on countries.id=trips.id_countries 
+        INNER JOIN periods on periods.id=trips.id_periods
       GROUP BY countries.id;`,
     (err, results) => {
       if (err) {
@@ -42,9 +42,9 @@ router.get("/tripper/periode/:id", (req, res) => {
   // Connection to the database and selection of information
   connection.query(
     `SELECT countries.id AS id_countries, countries.name, count(*) as numOfVisited, countries.nameFr, countries.flag, countries.pictures
-      FROM assoc_countries_periods_users
-        INNER JOIN countries on countries.id=assoc_countries_periods_users.id_countries 
-        INNER JOIN periods on periods.id=assoc_countries_periods_users.id_periods
+      FROM trips
+        INNER JOIN countries on countries.id=trips.id_countries 
+        INNER JOIN periods on periods.id=trips.id_periods
       WHERE id_periods=?
       GROUP BY countries.id;`, [id],
     (err, results) => {
