@@ -5,18 +5,20 @@ const router = express.Router();
 const passport = require("passport");
 require("../passport-startegies");
 
-// router.use((req, res, next) => {
-//   passport.authenticate("jwt", { session: false }, (error, user) => {
-//     if (error) return res.status(500).send(error, info);
-//     if (!user) return res.status(401).send("Unauthorized");
-//     next();
-//   })(req, res);
-// });
+router.use((req, res, next) => {
+  passport.authenticate("jwt", { session: false }, (error, user) => {
+    if (error) return res.status(500).send(error, info);
+    if (!user) return res.status(401).send("Unauthorized");
+    req.idUser = user.id
+    next();
+  })(req, res);
+});
 
 router.get('/:idUser', (req, res) => {
-  const { idUser } = req.params;
+  const idUser = req.idUser;
+
   connection.query(
-    `SELECT users.id AS user_id, users.name AS user_name, users.avatar, 
+    `SELECT users.id AS user_id, users.name AS user_name, users.avatar 
     FROM users
     WHERE id=?;`, [idUser],
     (err, results) => {
@@ -29,10 +31,10 @@ router.get('/:idUser', (req, res) => {
 );
 
 router.get("/:idUser/countries", (req, res) => {
-  const { idUser } = req.params;
+  const idUser = req.idUser;
   // Connection to the database and selection of information
   connection.query(
-    `SELECT countries.flag, countries.name AS country_name, countries.coded, periods.month AS month, assoc_countries_periods_users.year, assoc_countries_periods_users.check
+    `SELECT countries.flag, countries.pictures, countries.name AS country_name, countries.coded, periods.month AS month, assoc_countries_periods_users.year, assoc_countries_periods_users.check
       FROM assoc_countries_periods_users
     INNER JOIN countries on countries.id = assoc_countries_periods_users.id_countries
     INNER JOIN users on users.id = assoc_countries_periods_users.id_users
@@ -55,7 +57,7 @@ router.post('/:idUser/avatar', (req, res) => {
   if (req.files === null) {
     return res.status(400).json({ msg: 'No file uploaded' });
   }
-  const { idUser } = req.params;
+  const idUser = req.idUser;
   const file = req.files.file;
 
   file.mv(`${__dirname}/../tmp/${file.name}`
@@ -91,7 +93,7 @@ router.post('/:idUser/avatar', (req, res) => {
 });
 
 router.post('/:idUser/country', (req, res) => {
-  const { idUser } = req.params;
+  const idUser = req.idUser;
   const { country, period, year, check } = req.body;
   connection.query(
     'INSERT INTO assoc_countries_periods_users SET id_countries=?, id_periods=?, year=?, check=?, id_users=?;', [country, period, year, check, idUser],
