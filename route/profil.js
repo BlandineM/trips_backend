@@ -34,13 +34,13 @@ router.get("/:idUser/countries", (req, res) => {
   const idUser = req.idUser;
   // Connection to the database and selection of information
   connection.query(
-    `SELECT countries.flag, countries.pictures, countries.name AS country_name, countries.coded, periods.month AS month, assoc_countries_periods_users.year, assoc_countries_periods_users.check
-      FROM assoc_countries_periods_users
-    INNER JOIN countries on countries.id = assoc_countries_periods_users.id_countries
-    INNER JOIN users on users.id = assoc_countries_periods_users.id_users
-    LEFT JOIN periods on periods.id = assoc_countries_periods_users.id_periods
+    `SELECT countries.flag, countries.pictures, countries.name AS country_name, countries.code, periods.month AS month, trips.year, trips.check
+      FROM trips
+    INNER JOIN countries on countries.id = trips.id_countries
+    INNER JOIN users on users.id = trips.id_users
+    LEFT JOIN periods on periods.id = trips.id_periods
     WHERE users.id=?
-    ORDER BY assoc_countries_periods_users.year DESC`, [idUser],
+    ORDER BY trips.year DESC`, [idUser],
     (err, results) => {
       if (err) {
         // If an error has occurred, then the user is informed of the error
@@ -96,7 +96,7 @@ router.post('/:idUser/country', (req, res) => {
   const idUser = req.idUser;
   const { country, period, year, check } = req.body;
   connection.query(
-    'INSERT INTO assoc_countries_periods_users SET id_countries=?, id_periods=?, year=?, check=?, id_users=?;', [country, period, year, check, idUser],
+    'INSERT INTO trips SET id_countries=?, id_periods=?, year=?, check=?, id_users=?;', [country, period, year, check, idUser],
     (err, results) => {
       if (err) {
         return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
