@@ -78,7 +78,7 @@ router.post('/:idUser/avatar', (req, res) => {
             console.log(err);
             return res.status(500).send(err);
           }
-          const avatarUrl = image.url;
+          const avatarUrl = image.url.replace('http', 'https');
           connection.query(
             'UPDATE users SET avatar = ? WHERE id = ?;', [avatarUrl, idUser],
             (errUpdate) => {
