@@ -18,7 +18,7 @@ router.get("/:idUser", (req, res) => {
           `SELECT assoc_countries_periods.id_countries, assoc_countries_periods.id_periods, assoc_countries_periods.temperature, assoc_countries_periods.precipitation, countries.nameFr, countries.name,countries.flag, countries.pictures
             FROM voyage_2.assoc_countries_periods 
           INNER JOIN countries on countries.id=assoc_countries_periods.id_countries
-          WHERE temperature between (?- 0.12) and (? + 0.12) and precipitation between(?-0.12) and (?+0.12);`, [country.temperature, country.temperature, country.precipitation, country.precipitation]))
+          WHERE temperature between (?- 0.12) and (? + 0.12) and precipitation between(?-0.12) and (?+0.12) and (id_countries <> ? or id_periods <> ?);`, [country.temperature, country.temperature, country.precipitation, country.precipitation, country.id_countries, country.id_periods]))
       })
       return Promise.all(temperaturePromise)
     })
