@@ -92,11 +92,13 @@ router.post('/:idUser/avatar', (req, res) => {
     });
 });
 
-router.post('/:idUser/country', (req, res) => {
+router.post('/:idUser/trip', (req, res) => {
   const idUser = req.idUser;
   const { country, period, year, check } = req.body;
   connection.query(
-    'INSERT INTO trips SET id_countries=?, id_periods=?, year=?, check=?, id_users=?;', [country, period, year, check, idUser],
+    `INSERT INTO trips 
+    SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?;`,
+    [country, period, year, check, idUser],
     (err, results) => {
       if (err) {
         return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
