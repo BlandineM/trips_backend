@@ -19,6 +19,7 @@ app.use(fileUpload());
 app.use("/type", require("./route/type"));
 app.use("/auth", require("./route/auth"));
 app.use("/profil", require("./route/profil"));
+app.use("/me", require("./route/me"));
 app.use("/countries", require("./route/countries"));
 app.use("/suggestion", require("./route/suggestion"));
 
