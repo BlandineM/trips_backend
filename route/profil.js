@@ -30,29 +30,6 @@ router.get('/:idUser', (req, res) => {
 }
 );
 
-router.get("/:idUser/countries", (req, res) => {
-  const idUser = req.idUser;
-  // Connection to the database and selection of information
-  connection.query(
-    `SELECT countries.flag, countries.pictures, countries.name AS country_name, countries.code, periods.month AS month, trips.year, trips.check
-      FROM trips
-    INNER JOIN countries on countries.id = trips.id_countries
-    INNER JOIN users on users.id = trips.id_users
-    LEFT JOIN periods on periods.id = trips.id_periods
-    WHERE users.id=?
-    ORDER BY trips.year DESC`, [idUser],
-    (err, results) => {
-      if (err) {
-        // If an error has occurred, then the user is informed of the error
-        res.status(500).send("Error in destination");
-      }
-      res.status(200).send(results);
-    }
-  );
-});
-
-
-
 router.post('/:idUser/avatar', (req, res) => {
   if (req.files === null) {
     return res.status(400).json({ msg: 'No file uploaded' });
