@@ -50,4 +50,23 @@ router.get("/profil/countries", (req, res) => {
   );
 });
 
+router.post('/trip', (req, res) => {
+  const idUser = req.idUser;
+  const { country, month, year, check } = req.body;
+  console.log(req.body);
+
+  connection.query(
+    `INSERT INTO trips 
+    SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?;`,
+    [country, month, year, check, idUser],
+    (err, results) => {
+
+      if (err) {
+        return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
+      }
+      return res.status(200).send('ok');
+    });
+}
+);
+
 module.exports = router
