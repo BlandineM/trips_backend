@@ -76,7 +76,7 @@ router.delete('/trip', (req, res) => {
     (err, results) => {
 
       if (err) {
-        return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
+        return res.status(500).send(`erreur lors de la suppresion du voyage ${err}`);
       }
       return res.status(200).send('ok');
     });
@@ -94,7 +94,7 @@ router.put('/trip', (req, res) => {
     (err, results) => {
 
       if (err) {
-        return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
+        return res.status(500).send(`erreur lors de la modification du voyage ${err}`);
       }
       return res.status(200).send('ok');
     });
