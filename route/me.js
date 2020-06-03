@@ -53,8 +53,6 @@ router.get("/profil/countries", (req, res) => {
 router.post('/trip', (req, res) => {
   const idUser = req.idUser;
   const { country, month, year, check } = req.body;
-  console.log(req.body);
-
   connection.query(
     `INSERT INTO trips 
     SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?;`,
@@ -72,8 +70,6 @@ router.post('/trip', (req, res) => {
 router.delete('/trip', (req, res) => {
   const idUser = req.idUser;
   const { country, month, year, check } = req.body;
-  console.log(req.body);
-
   connection.query(
     `DELETE From trips 
     WHERE trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?;`,
@@ -91,8 +87,6 @@ router.delete('/trip', (req, res) => {
 router.put('/trip', (req, res) => {
   const idUser = req.idUser;
   const { country, month, year, check } = req.body;
-  console.log(req.body);
-
   connection.query(
     `UPDATE trips 
     SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?;`,
