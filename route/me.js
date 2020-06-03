@@ -33,7 +33,7 @@ router.get("/profil/countries", (req, res) => {
   const idUser = req.idUser;
   // Connection to the database and selection of information
   connection.query(
-    `SELECT countries.flag, countries.pictures, countries.name AS country_name, countries.code, periods.month AS month, trips.year, trips.check
+    `SELECT countries.flag, countries.pictures, countries.name AS country_name, countries.code, periods.month AS month, trips.id, trips.year, trips.check
       FROM trips
     INNER JOIN countries on countries.id = trips.id_countries
     INNER JOIN users on users.id = trips.id_users
