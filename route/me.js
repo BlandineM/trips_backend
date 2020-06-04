@@ -33,7 +33,7 @@ router.get("/profil/countries", (req, res) => {
   const idUser = req.idUser;
   // Connection to the database and selection of information
   connection.query(
-    `SELECT countries.flag, countries.pictures, countries.name AS country_name, countries.code, periods.month AS month, trips.year, trips.check
+    `SELECT countries.flag, countries.pictures, countries.name AS country_name, countries.code, periods.month AS month, trips.id, trips.year, trips.check
       FROM trips
     INNER JOIN countries on countries.id = trips.id_countries
     INNER JOIN users on users.id = trips.id_users
@@ -49,5 +49,57 @@ router.get("/profil/countries", (req, res) => {
     }
   );
 });
+
+router.post('/trip', (req, res) => {
+  const idUser = req.idUser;
+  const { country, month, year, check } = req.body;
+  connection.query(
+    `INSERT INTO trips 
+    SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?;`,
+    [country, month, year, check, idUser],
+    (err, results) => {
+
+      if (err) {
+        return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
+      }
+      return res.status(200).send('ok');
+    });
+}
+);
+
+router.delete('/trip/:id', (req, res) => {
+  const { id } = req.params;
+  connection.query(
+    `DELETE From trips 
+    WHERE trips.id = ?;`,
+    [id],
+    (err, results) => {
+
+      if (err) {
+        return res.status(500).send(`erreur lors de la suppresion du voyage ${err}`);
+      }
+      return res.status(200).send('ok');
+    });
+}
+);
+
+router.put('/trip/:id', (req, res) => {
+  const idUser = req.idUser;
+  const { id } = req.params
+  const { country, month, year, check } = req.body;
+  connection.query(
+    `UPDATE trips 
+    SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?
+    Where trips.id = ? ;`,
+    [country, month, year, check, idUser, id],
+    (err, results) => {
+
+      if (err) {
+        return res.status(500).send(`erreur lors de la modification du voyage ${err}`);
+      }
+      return res.status(200).send('ok');
+    });
+}
+);
 
 module.exports = router
