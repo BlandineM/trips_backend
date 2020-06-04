@@ -67,8 +67,8 @@ router.post('/trip', (req, res) => {
 }
 );
 
-router.delete('/trip', (req, res) => {
-  const { id } = req.body;
+router.delete('/trip/:id', (req, res) => {
+  const { id } = req.params;
   connection.query(
     `DELETE From trips 
     WHERE trips.id = ?;`,
@@ -83,9 +83,10 @@ router.delete('/trip', (req, res) => {
 }
 );
 
-router.put('/trip', (req, res) => {
+router.put('/trip/:id', (req, res) => {
   const idUser = req.idUser;
-  const { country, month, year, check, id } = req.body;
+  const { id } = req.params
+  const { country, month, year, check } = req.body;
   connection.query(
     `UPDATE trips 
     SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?
