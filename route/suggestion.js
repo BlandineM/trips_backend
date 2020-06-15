@@ -1,9 +1,20 @@
 const express = require("express");
 const { connection } = require("../config/db");
 const router = express.Router();
+const passport = require("passport");
 
-router.get("/:idUser", (req, res) => {
-  const { idUser } = req.params;
+
+router.use((req, res, next) => {
+  passport.authenticate("jwt", { session: false }, (error, user) => {
+    if (error) return res.status(500).send(error, info);
+    if (!user) return res.status(401).send("Unauthorized");
+    req.idUser = user.id
+    next();
+  })(req, res);
+});
+
+router.get("/", (req, res) => {
+  const idUser = req.idUser;
   // Connection to the database and selection of information
   connection.promise().query(
     `SELECT trips.id_countries, trips.id_periods, assoc_countries_periods.temperature,assoc_countries_periods.precipitation
@@ -18,7 +29,7 @@ router.get("/:idUser", (req, res) => {
           `SELECT assoc_countries_periods.id_countries, assoc_countries_periods.id_periods, assoc_countries_periods.temperature, assoc_countries_periods.precipitation, countries.nameFr, countries.name,countries.flag, countries.pictures
             FROM voyage_2.assoc_countries_periods 
           INNER JOIN countries on countries.id=assoc_countries_periods.id_countries
-          WHERE temperature between (?- 0.12) and (? + 0.12) and precipitation between(?-0.12) and (?+0.12) and (id_countries <> ? or id_periods <> ?);`, [country.temperature, country.temperature, country.precipitation, country.precipitation, country.id_countries, country.id_periods]))
+          WHERE temperature between (?- 1) and (? + 1) and precipitation between(?-1) and (?+1) and (id_countries <> ? or id_periods <> ?);`, [country.temperature, country.temperature, country.precipitation, country.precipitation, country.id_countries, country.id_periods]))
       })
       return Promise.all(temperaturePromise)
     })
