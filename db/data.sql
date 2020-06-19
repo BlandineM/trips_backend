@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.29, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.30, for Linux (x86_64)
 --
 -- Host: localhost    Database: voyage_2
 -- ------------------------------------------------------
--- Server version	5.7.29-0ubuntu0.18.04.1
+-- Server version	5.7.30-0ubuntu0.18.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -53,22 +53,6 @@ CREATE TABLE `assoc_countries_periods_types` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `assoc_countries_users_to_check`
---
-
-DROP TABLE IF EXISTS `assoc_countries_users_to_check`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `assoc_countries_users_to_check` (
-  `id_countries` int(11) NOT NULL,
-  `id_users` int(11) NOT NULL,
-  PRIMARY KEY (`id_countries`,`id_users`),
-  KEY `fk_assoc_pays_users_to_check_2_idx` (`id_users`),
-  CONSTRAINT `fk_assoc_pays_users_to_check_2` FOREIGN KEY (`id_users`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `countries`
 --
 
@@ -85,7 +69,7 @@ CREATE TABLE `countries` (
   `flag` varchar(255) DEFAULT NULL,
   `pictures` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20591 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1090 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -110,16 +94,20 @@ DROP TABLE IF EXISTS `trips`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `trips` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_countries` int(11) NOT NULL,
   `id_periods` int(11) DEFAULT NULL,
   `id_users` int(11) NOT NULL,
   `year` year(4) DEFAULT NULL,
   `check` tinyint(4) DEFAULT '0',
+  `description` varchar(100) DEFAULT NULL,
+  `picture` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `fk_assoc_pays_periodes_users_2_idx` (`id_periods`),
   KEY `fk_assoc_pays_periodes_users_3_idx` (`id_users`),
   KEY `fk_assoc_pays_periodes_users_1_idx` (`id_countries`),
   CONSTRAINT `fk_assoc_pays_periodes_users_3` FOREIGN KEY (`id_users`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,4 +174,4 @@ CREATE TABLE `weather-countries` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-05-03 19:47:05
+-- Dump completed on 2020-06-19 14:16:31
