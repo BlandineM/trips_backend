@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const { cloudinary } = require("../config/conf")
 const { connection } = require("../config/db");
+require("../passport-startegies");
 
 router.use((req, res, next) => {
   passport.authenticate("jwt", { session: false }, (error, user) => {
@@ -52,20 +54,53 @@ router.get("/profil/countries", (req, res) => {
 
 router.post('/trip', (req, res) => {
   const idUser = req.idUser;
-  const { country, month, year, check } = req.body;
-  connection.query(
+  const { country, month, year, check, description } = req.body;
+  return connection.promise().query(
     `INSERT INTO trips 
-    SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?;`,
-    [country, month, year, check, idUser],
-    (err, results) => {
-
-      if (err) {
-        return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
+    SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?, trips.description = ?;`,
+    [country, month, year, check, idUser, description])
+    .then(result => {
+      return Promise.resolve(JSON.parse(JSON.stringify(result))[0].insertId)
+    })
+    .then(tripId => {
+      const file = req.files.file;
+      if (req.files === null) {
+        return res.status(400).json({ msg: 'No file uploaded' });
       }
-      return res.status(200).send('ok');
-    });
-}
-);
+      file.mv(`${__dirname}/../tmp/${file.name}`
+        , err => {
+          if (err) {
+            console.error(err, "err1");
+            return res.status(500).send(err);
+          }
+          cloudinary.uploader.upload(
+            `${__dirname}/../tmp/${file.name}`,
+            {
+              folder: 'trips/',
+              public_id: `${tripId}`,
+              tags: 'trips'
+            },
+            (err, image) => {
+              if (err) {
+                console.log(err, "err2");
+                return res.status(500).send(err);
+              }
+              const tripUrl = image.url;
+              connection.query(
+                `UPDATE trips SET trips.picture = ? WHERE id = ?;`,
+                [tripUrl, tripId],
+                (err, results) => {
+                  console.log(results);
+                  if (err) {
+                    return res.status(500).send(`erreur lors de l\'ajout du voyage ${err}`);
+                  }
+                  return res.status(200).send('ok');
+                });
+            }
+          )
+        });
+    })
+});
 
 router.delete('/trip/:id', (req, res) => {
   const { id } = req.params;
