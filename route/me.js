@@ -59,9 +59,8 @@ function isCountryCheck(month, year) {
 
 router.post('/trip', (req, res) => {
   const idUser = req.idUser;
-  const check = isCountryCheck(month, year);
-  connection.query(
   const { country, month, year, description } = req.body;
+  const check = isCountryCheck(month, year);
   return connection.promise().query(
     `INSERT INTO trips 
     SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?, trips.description = ?;`,
@@ -106,8 +105,8 @@ router.post('/trip', (req, res) => {
             }
           )
         });
-    })
-});
+    });
+  });
 
 router.delete('/trip/:id', (req, res) => {
   const { id } = req.params;
