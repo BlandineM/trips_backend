@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const moment = require("moment");
 const { cloudinary } = require("../config/conf")
 const { connection } = require("../config/db");
 require("../passport-startegies");
@@ -52,9 +53,14 @@ router.get("/profil/countries", (req, res) => {
   );
 });
 
+function isCountryCheck(month, year) {
+    return moment().set({'year': year, 'month': month}).isSameOrBefore(moment());
+};
+
 router.post('/trip', (req, res) => {
   const idUser = req.idUser;
-  const { country, month, year, check, description } = req.body;
+  const { country, month, year, description } = req.body;
+  const check = isCountryCheck(month, year);
   return connection.promise().query(
     `INSERT INTO trips 
     SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?, trips.description = ?;`,
@@ -99,8 +105,8 @@ router.post('/trip', (req, res) => {
             }
           )
         });
-    })
-});
+    });
+  });
 
 router.delete('/trip/:id', (req, res) => {
   const { id } = req.params;
@@ -121,7 +127,8 @@ router.delete('/trip/:id', (req, res) => {
 router.put('/trip/:id', (req, res) => {
   const idUser = req.idUser;
   const { id } = req.params
-  const { country, month, year, check } = req.body;
+  const { country, month, year } = req.body;
+  const check = isCountryCheck(month, year);
   connection.query(
     `UPDATE trips 
     SET trips.id_countries = ?, trips.id_periods = ?, trips.year = ?, trips.check = ?, trips.id_users = ?
